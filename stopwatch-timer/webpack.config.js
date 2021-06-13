@@ -4,7 +4,7 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin")
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 
 module.exports = {
-  entry: ["./src/index.js"],
+  entry: ["./src/js/index.js"],
   output: {
     filename: "js/[name].js",
     path: path.resolve(__dirname, "dist"),
@@ -17,7 +17,7 @@ module.exports = {
   ],
   devServer: {
     historyApiFallback: true,
-    contentBase: path.resolve(__dirname, "dist/second.html"),
+    contentBase: path.resolve(__dirname, "dist/index.html"),
     open: true,
     compress: true,
     hot: true,
