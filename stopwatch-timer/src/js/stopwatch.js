@@ -106,9 +106,9 @@ export default class Stopwatch {
 
     function stopwatchClick(sectionCounter1, t) {
       document.querySelector(".stopwatch__sections-container").innerHTML += `
-          <div class="section">
-            <h3 class="section__title">Section ${sectionCounter1}</h3>
-            <p class="section__time">${t.minutes}:${t.seconds}:${t.milliSeconds}</p>
+          <div class=".stopwatch__section">
+            <h3 class=".stopwatch__section__title">Section ${sectionCounter1}</h3>
+            <p class=".stopwatch__section__time">${t.minutes}:${t.seconds}:${t.milliSeconds}</p>
           </div>
         `;
 

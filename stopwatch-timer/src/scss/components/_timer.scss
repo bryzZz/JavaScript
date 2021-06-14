@@ -5,6 +5,24 @@
   justify-content: center;
 
   margin-bottom: 2%;
+
+  max-width: 350px;
+  margin: 0 auto;
+
+  position: relative;
+
+  &::after{
+    content: '<- click and edit';
+
+    position: absolute;
+    right: -20%;
+    top: 25%;
+
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.9);
+
+    // transform: translateY(-50%);
+  }
 }
 input[type="number"] {
   font-size: 72px;

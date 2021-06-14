@@ -1,62 +1,78 @@
-.stopwatch__time-bar {
-  font-size: 72px;
+.stopwatch {
 
-  margin-bottom: 2%;
+  &__time-bar {
+    font-size: 72px;
+
+    margin-bottom: 2%;
+  }
+
+  &__control {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    max-width: 350px;
+    margin: 0 auto 3%;
+  }
+  &__control-start-stop-btn,
+  &__control-reset,
+  &__control-interval-setter{
+    transition: all 0.2s;
+  }
+  &__control-reset,
+  &__control-interval-setter{
+    width: 30px;
+    height: 30px;
+
+    background-color: transparent;
+
+    fill: rgba(0, 0, 0, 0.2);
+  }
+
+  &__control-reset {
+    transform: rotate(-65deg);
+  }
+
+  &__control-start-stop-btn {
+    border: none;
+    outline: none;
+    border-radius: 5px;
+
+    box-shadow: 0 0 5px 3px rgba(0, 0, 0, 0.1);
+
+    padding: 9px 20px;
+
+    font-size: 16px;
+    font-weight: 400;
+
+    cursor: pointer;
+
+    &:hover{
+      box-shadow: 0 0 7px 5px rgba(0, 0, 0, 0.15);
+    }
+  }
+
+  &__control-interval-setter {
+  }
+
+  &__sections-container {
+    max-width: 350px;
+    margin: 0 auto;
+  }
+
+  &__section{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    color: rgba(0, 0, 0, 0.8);
+
+    padding: 2% 1% 3%;
+
+    border-top: 2px solid rgba(0, 0, 0, 0.3);
+  }
 }
-
-.stopwatch__control {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-
-  max-width: 350px;
-  margin: 0 auto 3%;
-}
-
-.stopwatch__control-start-stop-btn,
-.stopwatch__control-reset,
-.stopwatch__control-interval-setter {
-  transition: all 0.2s;
-}
-
-.stopwatch__control-start-stop-btn {
-  border: none;
-  outline: none;
-  border-radius: 5px;
-
-  box-shadow: 0 0 5px 3px rgba(0, 0, 0, 0.1);
-
-  padding: 9px 20px;
-
-  font-size: 16px;
-  font-weight: 400;
-
-  cursor: pointer;
-}
-.stopwatch__control-start-stop-btn:hover {
-  box-shadow: 0 0 7px 5px rgba(0, 0, 0, 0.15);
-}
-
-.stopwatch__control-reset,
-.stopwatch__control-interval-setter {
-  width: 30px;
-  height: 30px;
-
-  background-color: transparent;
-
-  fill: rgba(0, 0, 0, 0.2);
-}
-
-.stopwatch__control-reset {
-  transform: rotate(-65deg);
-}
-
-.stopwatch__sections-container {
-  max-width: 350px;
-  margin: 0 auto;
-}
-
-.section {
+.stopwatch__section{
   display: flex;
   justify-content: space-between;
   align-items: center;

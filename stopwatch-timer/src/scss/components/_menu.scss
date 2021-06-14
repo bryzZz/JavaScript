@@ -4,32 +4,32 @@
   top: 0;
 
   padding: 1% 2%;
-}
 
-.menu__list {
-  list-style: none;
+  &__list{
+    list-style: none;
 
-  display: flex;
-  justify-content: space-between;
-}
+    display: flex;
+    justify-content: space-between;
+  }
 
-.menu__item + .menu__item {
-  margin-left: 15px;
-}
+  &__item{
+    text-transform: uppercase;
+    font-size: 16px;
+    color: rgba(0, 0, 0, 0.5);
 
-.menu__item {
-  text-transform: uppercase;
-  font-size: 16px;
-  color: rgba(0, 0, 0, 0.5);
+    padding-bottom: 1%;
 
-  padding-bottom: 1%;
+    transition: all 0.2s;
 
-  transition: all 0.2s;
+    cursor: pointer;
 
-  cursor: pointer;
-}
+    &:last-child{
+      margin-left: 15px;
+    }
 
-.menu__item.active {
-  color: #000;
-  border-bottom: 2px solid black;
+    &.active{
+      color: #000;
+      border-bottom: 2px solid black;
+    }
+  }
 }
