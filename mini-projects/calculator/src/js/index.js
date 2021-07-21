@@ -19,12 +19,34 @@ calculator.addEventListener('click', (e) => {
 });
 
 function calculate(strExpression){
-    strExpression = '22+3-2*(2*5+2)*4';
+    // strExpression = '22+3-2*(2*5+2)*4';
+    strExpression = '2.2 ^ 3 + 2 * 2 ^ 3';
+
+    //possible operations
+    const operators = {
+        '+'(first, second) {
+            return first + second;
+        },
+        '-'(first, second) {
+            return first - second;
+        },
+        '*'(first, second) {
+            return first * second;
+        },
+        '/'(first, second) {
+            return first / second;
+        },
+        '^'(first, second) {
+            return first ** second;
+        },
+    }
 
     //tokenization
-    let lexemes = ['(', '3', '+', '(', '4', '*', '5' ,')',')'];
-
-    let syntaxTree = buldSyntaxTree(lexemes);
+    const lexemes = tokenize(strExpression);
+    // build syntax tree
+    const syntaxTree = buldSyntaxTree(lexemes);
+    // calculate result
+    const calculatedResult = syntaxTreeCalculate(syntaxTree);
 
     function tokenize(strExpression){
         let lexemes = [];
@@ -32,26 +54,18 @@ function calculate(strExpression){
         let i = 0;
         while(i < strExpression.length){
             let s = strExpression[i];
-            switch(s){
-                case '(': lexemes.push({type: 'leftBracket', value: '('}); break;
-                case ')': lexemes.push({type: 'rightBracket', value: ')'}); break;
-                case '+': lexemes.push({type: 'opPlus', value: '+'}); break;
-                case '-': lexemes.push({type: 'opMinus', value: '-'}); break;
-                case '*': lexemes.push({type: 'opMul', value: '*'}); break;
-                case '/': lexemes.push({type: 'opDiv', value: '/'}); break;
-                default: 
-                    if(!isNaN(s)){
-                        let str = s;
-                        i++;
-                        while(!isNaN(strExpression[i]) && i < strExpression.length){
-                            str += strExpression[i];
-                            i++;
-                        }
-                        lexemes.push({type: 'number', value: str});
-                        continue;
-                    }
+            if(s in operators || s === '(' || s === ')'){
+                lexemes.push(s);
+            }else if(!isNaN(s)){
+                let str = s;
+                i++;
+                while((!isNaN(strExpression[i]) || strExpression[i] === '.') && i < strExpression.length){
+                    str += strExpression[i];
+                    i++;
+                }
+                lexemes.push(str.trim());
+                continue;
             }
-
             i++;
         }
 
@@ -69,44 +83,54 @@ function calculate(strExpression){
             }
         }
     
-        let currentNode = new Node();
+        let currentNode;
 
         for(let lexeme of lexemes){
             if(lexeme === '('){
                 currentNode.leftChild = new Node(null, currentNode);
                 currentNode = currentNode.leftChild; 
-            }else if(['+', '-', '*', '/'].includes(lexeme)){
-                currentNode = currentNode.parent = new Node({value: lexeme, leftChild: currentNode});
-            }else if(!isNaN(lexeme)){
-                if(!currentNode.parent){
-                    currentNode.value = +lexeme;
+            }else if(['+', '-', '*', '/', '^'].includes(lexeme)){
+                let pr = (lexeme === '*' || lexeme === '/') ? 2 : 1;
+
+                if(lexeme === '^'){
+                    pr = 3;
+                }
+
+                if(!currentNode?.parent){
+                    currentNode.parent = new Node({value: lexeme, leftChild: currentNode, priority: pr});
+                    currentNode = currentNode.parent;
                 }else{
-                    
+                    do{
+                        currentNode = currentNode.parent;
+                    }while(currentNode?.priority > pr && currentNode?.parent);
+
+                    if(currentNode.priority >= pr){
+                        currentNode = new Node({value: lexeme, leftChild: currentNode, priority: pr});
+                    }else{
+                        currentNode.rightChild = new Node({value: lexeme, leftChild: currentNode.rightChild, priority: pr, parent: currentNode});
+                        currentNode = currentNode.rightChild;
+                    }
+                }
+            }else if(!isNaN(lexeme)){
+                if(!currentNode?.leftChild){
+                    currentNode = new Node({value: +lexeme});
+                }else{
+                    currentNode.rightChild = new Node({value: +lexeme, parent: currentNode});
+                    currentNode = currentNode.rightChild;
                 }
             }else if(lexeme === ')'){
                 currentNode = currentNode.parent;
             }
         }
 
-        return rootnode;
+        while(currentNode?.parent){
+            currentNode = currentNode.parent;
+        }
+
+        return currentNode;
     }
 
     function syntaxTreeCalculate(syntaxTreeNode){
-        const operators = {
-            '+'(first, second) {
-                return first + second;
-            },
-            '-'(first, second) {
-                return first - second;
-            },
-            '*'(first, second) {
-                return first * second;
-            },
-            '/'(first, second) {
-                return first / second;
-            },
-        }
-
         const leftChild = syntaxTreeNode.leftChild;
         const rightChild = syntaxTreeNode.rightChild;
 
@@ -118,7 +142,5 @@ function calculate(strExpression){
         }
     }
 
-    const calculatedResult = syntaxTreeCalculate(syntaxTree);
-
-    console.log(syntaxTree, calculatedResult);
+    console.log(lexemes, syntaxTree, calculatedResult);
 }
