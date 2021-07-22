@@ -13,31 +13,50 @@ calculator.addEventListener('click', (e) => {
         calculate(expression);
         return;
     }
+    if(e.target.dataset.option === "clear"){
+        expression = '';
+        showLine.textContent = '0';
+        return;
+    }
 
-    expression += e.target.dataset.value;
-    showLine.textContent += e.target.textContent;
+    if(showLine.textContent.trim() === '0'){
+        expression = e.target.dataset.value;
+        showLine.textContent = e.target.textContent;
+    }else{
+        expression += e.target.dataset.value;
+        showLine.textContent += e.target.textContent;
+    }
 });
 
 function calculate(strExpression){
-    // strExpression = '22+3-2*(2*5+2)*4';
-    strExpression = '2.2 ^ 3 + 2 * 2 ^ 3';
+    // strExpression = '1+(2-3)*4*5+6*7';
+    // strExpression = '2.2 ^ 3 + 2 * 2 ^ 3';
 
     //possible operations
     const operators = {
-        '+'(first, second) {
-            return first + second;
+        '+': {
+            fn: (first, second) => first + second,
+            priority: 1
         },
-        '-'(first, second) {
-            return first - second;
+        '-': {
+            fn: (first, second) => first - second,
+            priority: 1
         },
-        '*'(first, second) {
-            return first * second;
+        '*': {
+            fn: (first, second) => first * second,
+            priority: 2
         },
-        '/'(first, second) {
-            return first / second;
+        '/': {
+            fn: (first, second) => first / second,
+            priority: 2
         },
-        '^'(first, second) {
-            return first ** second;
+        '%': {
+            fn: (first, second) => first % second,
+            priority: 2
+        },
+        '^': {
+            fn: (first, second) => first ** second,
+            priority: 3
         },
     }
 
@@ -54,8 +73,16 @@ function calculate(strExpression){
         let i = 0;
         while(i < strExpression.length){
             let s = strExpression[i];
-            if(s in operators || s === '(' || s === ')'){
+            if(s in operators){
                 lexemes.push(s);
+            }else if(s === '('){
+                let blockInBrackets = [];
+                i++;
+                while(strExpression[i] !== ')'){
+                    blockInBrackets.push(strExpression[i]);
+                    i++;
+                }
+                lexemes.push(blockInBrackets);
             }else if(!isNaN(s)){
                 let str = s;
                 i++;
@@ -86,15 +113,17 @@ function calculate(strExpression){
         let currentNode;
 
         for(let lexeme of lexemes){
-            if(lexeme === '('){
-                currentNode.leftChild = new Node(null, currentNode);
-                currentNode = currentNode.leftChild; 
-            }else if(['+', '-', '*', '/', '^'].includes(lexeme)){
-                let pr = (lexeme === '*' || lexeme === '/') ? 2 : 1;
-
-                if(lexeme === '^'){
-                    pr = 3;
+            if(Array.isArray(lexeme)){
+                const treeFromBrackets = buldSyntaxTree(lexeme);
+                if(!currentNode?.leftChild){
+                    currentNode = treeFromBrackets;
+                }else{
+                    currentNode.rightChild = treeFromBrackets;
+                    currentNode.rightChild.parent = currentNode;
+                    currentNode = currentNode.rightChild;
                 }
+            }else if(lexeme in operators){
+                let pr = operators[lexeme].priority;
 
                 if(!currentNode?.parent){
                     currentNode.parent = new Node({value: lexeme, leftChild: currentNode, priority: pr});
@@ -102,7 +131,7 @@ function calculate(strExpression){
                 }else{
                     do{
                         currentNode = currentNode.parent;
-                    }while(currentNode?.priority > pr && currentNode?.parent);
+                    }while(currentNode?.priority >= pr && currentNode?.parent);
 
                     if(currentNode.priority >= pr){
                         currentNode = new Node({value: lexeme, leftChild: currentNode, priority: pr});
@@ -118,11 +147,10 @@ function calculate(strExpression){
                     currentNode.rightChild = new Node({value: +lexeme, parent: currentNode});
                     currentNode = currentNode.rightChild;
                 }
-            }else if(lexeme === ')'){
-                currentNode = currentNode.parent;
             }
         }
 
+        //get the root of the tree
         while(currentNode?.parent){
             currentNode = currentNode.parent;
         }
@@ -131,16 +159,17 @@ function calculate(strExpression){
     }
 
     function syntaxTreeCalculate(syntaxTreeNode){
-        const leftChild = syntaxTreeNode.leftChild;
-        const rightChild = syntaxTreeNode.rightChild;
-
-        if(leftChild && rightChild){
-            const fn = operators[syntaxTreeNode.value];
-            return fn(syntaxTreeCalculate(leftChild), syntaxTreeCalculate(rightChild));
-        }else{
-            return syntaxTreeNode.value;
+        //if the node is operation
+        if(syntaxTreeNode.leftChild && syntaxTreeNode.rightChild){
+            const fn = operators[syntaxTreeNode.value].fn;
+            return fn(syntaxTreeCalculate(syntaxTreeNode.leftChild), syntaxTreeCalculate(syntaxTreeNode.rightChild));
         }
+        //if the node is number
+        return syntaxTreeNode.value;
     }
 
-    console.log(lexemes, syntaxTree, calculatedResult);
+    console.log('expression:', strExpression);
+    console.log('lexemes:', lexemes);
+    console.log('syntaxTree:', syntaxTree);
+    console.log('result:', calculatedResult);
 }
