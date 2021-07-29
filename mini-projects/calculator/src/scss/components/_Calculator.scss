@@ -27,7 +27,6 @@
 
         font-size: 14px;
         color: rgb(170, 170, 170);
-        // letter-spacing: 2px;
     }
 
     &__answer-line {
@@ -71,14 +70,20 @@
             font-size: 14px;
         }
 
-        &[data-option="option"],
-        &[data-option="clear"],
-        &[data-option="bracket-left"],
-        &[data-option="bracket-right"]{
+        &--dark{
             background-color:rgb(210, 210, 210);
 
             font-size: 15px;
         }
+
+        // &[data-option="option"],
+        // &[data-option="clear"],
+        // &[data-option="bracket-left"],
+        // &[data-option="bracket-right"]{
+        //     background-color:rgb(210, 210, 210);
+
+        //     font-size: 15px;
+        // }
 
         &[data-option="calculate"]{
             background-color:orange;

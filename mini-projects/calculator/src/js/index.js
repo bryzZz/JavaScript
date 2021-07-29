@@ -5,9 +5,10 @@ import '../scss/style.scss';
 
 const calculator = document.querySelector('.calculator'),
       showLine = calculator.querySelector('.calculator__answer-line'),
-      answerLine = calculator.querySelector('.calculator__show-line');
+      answerLine = calculator.querySelector('.calculator__show-line'),
+      clearBtn = calculator.querySelector('.calculator__btn[data-option="clear"]');
 
-let expression = '';
+let expression = '0';
 
 //possible operations
 const operators = {
@@ -37,44 +38,67 @@ const operators = {
     },
 }
 
+if (!String.prototype.lastEl){
+    String.prototype.lastEl = function(){
+        return this[this.length - 1];
+    };
+};
+
 calculator.addEventListener('click', (e) => {
     if(!e.target.classList.contains('calculator__btn')) return;
 
-    if(e.target.dataset.option === 'calculate'){
+    const pressedButtonOption = e.target.dataset.option,
+          pressedButtonValue = e.target.dataset.value;
+
+    if(pressedButtonOption === 'number'){
+        if(expression === '0'){
+            if(pressedButtonValue === '.'){
+                expression += pressedButtonValue;
+                showLine.textContent += pressedButtonValue;
+            }else{
+                expression = pressedButtonValue;
+                showLine.textContent = pressedButtonValue;
+            }
+        }else{
+            if(expression.lastEl() === '.' && pressedButtonValue === '.') return;
+            if(!isNaN(expression.lastEl()) || expression.lastEl() === '.'){
+                showLine.textContent += pressedButtonValue;
+            }else{
+                showLine.textContent += ' ' + pressedButtonValue;
+            }
+            expression += pressedButtonValue;
+        }
+    }else if(pressedButtonOption === 'math-operator'){
+        if(expression === '0' && pressedButtonValue === '-'){
+            expression = pressedButtonValue;
+            showLine.textContent = pressedButtonValue;
+        }else{
+            if(expression.lastEl() in operators){
+                expression = expression.slice(0, expression.length - 1) + e.target.dataset.value;
+                showLine.textContent = showLine.textContent.slice(0, showLine.textContent.length - 1) + e.target.textContent
+            }else{
+                expression += pressedButtonValue;
+                showLine.textContent += ' ' + pressedButtonValue;
+            }
+        }
+    }else if(pressedButtonOption === 'clear'){
+        return;
+    }else if(pressedButtonOption === 'calculate'){
         if(isExpressionCorrect(expression)){
             const result = calculate(expression);
 
-            new Typed(answerLine, showLine.textContent + '=', 260);
+            new Typed(answerLine, showLine.textContent + ' =', 260);
 
             showLine.textContent = result;
-            expression = result;
-        }
-        return;
-    }
-
-    if(e.target.dataset.option === 'clear'){
-        expression = '';
-        showLine.textContent = '0';
-        return;
-    }
-
-    if(showLine.textContent === '0'){
-        if(e.target.dataset.option === 'option' && e.target.dataset.value !== '-'){
-            return;
-        }
-
-        expression = e.target.dataset.value;
-        showLine.textContent = e.target.textContent;
-    }else if(e.target.dataset.option === 'option' && showLine.textContent[showLine.textContent.length-1] in operators){
-        if(expression.length > 1){
-            expression = expression.slice(0, expression.length - 1) + e.target.dataset.value;
-            showLine.textContent = showLine.textContent.slice(0, showLine.textContent.length - 1) + e.target.textContent
+            expression = '' + result;
         }
     }else{
-        expression += e.target.dataset.value;
-        showLine.textContent += e.target.textContent;
+        expression += pressedButtonValue;
+        showLine.textContent += ' ' + pressedButtonValue;
     }
 });
+
+clearBtn.addEventListener('mousedown', clear);
 
 function isExpressionCorrect(strExpression){
     strExpression = strExpression.trim();
@@ -203,4 +227,23 @@ function firstMethod(strExpression){
     }
 
     return calculatedResult;
+}
+
+function clear(){
+    const clearTimer = setTimeout(() => {
+        expression = '0';
+        showLine.textContent = '0';
+
+        this.removeEventListener('mouseup', mouseUp);
+    }, 1000);
+
+    this.addEventListener('mouseup', mouseUp, {once: true});
+
+    function mouseUp(){
+        if(clearTimer){
+            clearTimeout(clearTimer);
+            expression = expression.slice(0, expression.length-1);
+            showLine.textContent = showLine.textContent.slice(0, showLine.textContent.length-1).trim();
+        }
+    }
 }
