@@ -1,1 +1,2 @@
 # JavaScript
+Разное по js
