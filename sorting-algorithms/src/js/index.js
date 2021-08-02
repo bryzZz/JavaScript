@@ -2,14 +2,14 @@
 
 import "../style.css";
 
-import { randomInteger } from './utils';
+import { fillArrayWithRandomIntegers } from './utils';
 
 import bubbleGen from './bubble-sort';
 
 import Chart from 'chart.js/auto';
 
 const sidebar = document.querySelector('.sidebar'),
-      container = document.querySelector('.placeToShow'),
+      container = document.querySelector('.numbersContainer'),
       ctx = document.querySelector('#myChart').getContext('2d');
 
 sidebar.addEventListener('click', (e) => {
@@ -21,12 +21,12 @@ sidebar.addEventListener('click', (e) => {
     const sortingType = e.target.dataset.sortingType;
 });
 
-const arrayToSort = [];
-for(let i = 0; i < 10; i++){
-    arrayToSort.push(randomInteger(0, 100));
+const arrayToSort = fillArrayWithRandomIntegers(10, 0, 100);
+// for(let i = 0; i < 10; i++){
+//     arrayToSort.push(randomInteger(0, 100));
 
-    container.textContent += arrayToSort[i] + ' ';
-}
+//     container.textContent += arrayToSort[i] + ' ';
+// }
 
 console.log(arrayToSort);
 
@@ -63,30 +63,31 @@ function showChanges(){
 var myChart = new Chart(ctx, {
     type: 'bar',
     data: {
-        labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+        labels: ['', '', '', '', '', ''],
         datasets: [{
             label: 'Bubble sort',
             data: [12, 19, 3, 5, 2, 3],
             backgroundColor: [
                 'rgba(255, 99, 132, 0.2)',
-                'rgba(54, 162, 235, 0.2)',
-                'rgba(255, 206, 86, 0.2)',
+                'rgba(255, 99, 132, 0.2)',
                 'rgba(75, 192, 192, 0.2)',
-                'rgba(153, 102, 255, 0.2)',
-                'rgba(255, 159, 64, 0.2)'
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(255, 99, 132, 0.2)',
             ],
             borderColor: [
                 'rgba(255, 99, 132, 1)',
-                'rgba(54, 162, 235, 1)',
-                'rgba(255, 206, 86, 1)',
+                'rgba(255, 99, 132, 1)',
                 'rgba(75, 192, 192, 1)',
-                'rgba(153, 102, 255, 1)',
-                'rgba(255, 159, 64, 1)'
+                'rgba(75, 192, 192, 1)',
+                'rgba(255, 99, 132, 1)',
+                'rgba(255, 99, 132, 1)',
             ],
             borderWidth: 1
         }]
     },
     options: {
+        animation: false,
         scales: {
             y: {
                 beginAtZero: true
