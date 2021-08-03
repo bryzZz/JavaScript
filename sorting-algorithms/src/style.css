@@ -55,5 +55,10 @@
     display: flex;
     justify-content: center;
 
-    margin-top: 10%;
+    margin-top: 5%;
+}
+
+canvas{
+    /* background-color: rgba(0, 0, 0, .2); */
+    border: 1px solid black;
 }
