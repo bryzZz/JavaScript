@@ -4,8 +4,8 @@ export default class BarChart{
         {
             data,
             options: {
-                canvasWidth = 600,
-                canvasHeight = 200,
+                canvasWidth = 800,
+                canvasHeight = 300,
                 dpi = 2,
                 rowsCount = 5
             } = {}
@@ -13,7 +13,7 @@ export default class BarChart{
     ){
         this.canvas = canvas;
         this.ctx = this.canvas.getContext('2d');
-        this.ctx.clearRect(0, 0, canvas.width, canvas.height);
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.data = data;
 
         this.WIDTH = canvasWidth;
@@ -26,17 +26,12 @@ export default class BarChart{
         this.VIEW_WIDTH = this.DPI_WIDTH - this.PADDING * 2;
 
         this.values = this.data.map((item) => item.value);
-        // this.values = [100, 200, 300, 400, 500, 600, 100, 800, 900, 1000];
-        // this.data = this.data.map((item, index) => item.value = this.values[index]);
         [this.minValue, this.maxValue] = this.computeBoundaries(this.values);
         this.deltaY = this.maxValue - this.minValue;
 
         this.yRatio = this.VIEW_HEIGHT / (this.maxValue - this.minValue);
 
-        // console.log('vh =', this.VIEW_HEIGHT);
-        // console.log('yRatio =', this.yRatio);
-        // console.log('deltaY =', this.deltaY);
-        // console.log('values =', this.values);
+        this.barsData = [];
 
         canvas.style.width = this.WIDTH + 'px';
         canvas.style.height = this.HEIGHT + 'px';
@@ -68,7 +63,9 @@ export default class BarChart{
     }
 
     barsRender(){
-        this.PADDING_BARS = 10;
+        // this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        
+        this.PADDING_BARS = 2;
 
         this.ctx.beginPath();
 
@@ -80,18 +77,43 @@ export default class BarChart{
             let x = this.PADDING + barWidth * i;
             if(i !== 0) x += this.PADDING_BARS * i;
 
-            // console.log(i, 'y =', y, 'x =', x, 'barWidth =', barWidth, 'barHeight =', barHeight);
-
             this.ctx.fillStyle = this.data[i].color;
             this.ctx.fillRect(x, y, barWidth, barHeight);
+
+            this.barsData.push({index: i, x, y, barWidth, barHeight});
         }
-
-        // this.ctx.fillStyle = 'tomato';
-        // this.ctx.fillRect(this.PADDING, 300, 10, 100);
-        // this.ctx.fillRect(this.PADDING + this.VIEW_WIDTH - 10, 300, 10, 100);
-
         this.ctx.stroke();
         this.ctx.closePath();
+
+        // console.log(this.barsData);
+        // let n = 3;
+        // this.ctx.clearRect(this.barsData[n].x, this.barsData[n].y - 1, this.barsData[n].barWidth + 1, this.barsData[n].barHeight + 1);
+        // this.ctx.beginPath();
+        // this.ctx.fillStyle = 'tomato';
+        // this.ctx.fillRect(this.barsData[n].x, this.barsData[n].y, this.barsData[n].barWidth, this.barsData[n].barHeight);
+        // this.ctx.stroke();
+        // this.ctx.closePath();
+        // n = 5;
+        // this.ctx.clearRect(this.barsData[n].x - 1, this.barsData[n].y - 1, this.barsData[n].barWidth + 2, this.barsData[n].barHeight + 1);
+        // this.ctx.beginPath();
+        // this.ctx.fillStyle = 'tomato';
+        // this.ctx.fillRect(this.barsData[n].x, this.barsData[n].y, this.barsData[n].barWidth, this.barsData[n].barHeight);
+        // this.ctx.stroke();
+        // this.ctx.closePath();
+    }
+
+    swap(arr){
+        for(const pair of arr){
+            this.ctx.clearRect(this.barsData[pair[0]].x, this.barsData[pair[0]].y - 1, this.barsData[pair[0]].barWidth + 1, this.barsData[pair[0]].barHeight + 1);
+            this.ctx.clearRect(this.barsData[pair[1]].x, this.barsData[pair[1]].y - 1, this.barsData[pair[1]].barWidth + 1, this.barsData[pair[1]].barHeight + 1);
+
+            this.ctx.beginPath();
+            this.ctx.fillStyle = this.data[pair[0]].color;
+            this.ctx.fillRect(this.barsData[pair[0]].x, this.barsData[pair[1]].y, this.barsData[pair[1]].barWidth, this.barsData[pair[1]].barHeight);
+            this.ctx.fillRect(this.barsData[pair[1]].x, this.barsData[pair[0]].y, this.barsData[pair[0]].barWidth, this.barsData[pair[0]].barHeight);
+            this.ctx.stroke();
+            this.ctx.closePath();
+        }
     }
 
     computeBoundaries(data){

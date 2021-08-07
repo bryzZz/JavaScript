@@ -17,7 +17,7 @@
 
 export default function* bubbleSort(arr){
     const arrLength = arr.length;
-    // const values = arr.map(item => item.value);
+
     for(let i = 0; i < arrLength; i++){
         for(let j = arrLength-1; j > i; j--){
             if (arr[j-1].value > arr[j].value) {
