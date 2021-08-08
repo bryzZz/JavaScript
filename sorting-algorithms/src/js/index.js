@@ -5,8 +5,10 @@ import "../style.css";
 import { arrayToSortGen } from './utils';
 
 import bubbleGen from './bubble-sort';
-import insertionGen from './Insertion-sort';
 import shakerGen from './shaker-sort';
+import insertionGen from './Insertion-sort';
+import selectionGen from './selection-sort';
+import mergeGen from './merge-sort';
 
 import BarChart from './BarChart';
 
@@ -14,7 +16,8 @@ const sidebar = document.querySelector('.sidebar'),
       canvas = document.querySelector('#myCanvas'),
       speedSetting = document.querySelector('.settings select');
 
-let arrayToSort = arrayToSortGen(60, 100, 1000);
+let arrayToSort = arrayToSortGen(100, 100, 1000);
+// console.log(mergeGen(arrayToSort.map(item => item.value)));
 let barChart = new BarChart(canvas, {data: arrayToSort});
 
 const speedVariants = [300, 100, 50, 30, 10];
@@ -48,6 +51,8 @@ function showSort(type, speed){
         gen = insertionGen(arrayToSort);
     }else if(type === 'shaker'){
         gen = shakerGen(arrayToSort);
+    }else if(type === 'selection'){
+        gen = selectionGen(arrayToSort);
     }
 
     interval = setInterval(() => showChanges(gen, interval), speed);
@@ -64,15 +69,15 @@ function showChanges(gen, interval){
         arrayToSort = arrayToSortGen(60, 100, 1000);
         clearInterval(interval);
     }else{
-        const arr = nextValue.value[0],
-            firstIndex = nextValue.value[1],
-            secondIndex = nextValue.value[2];
+        const firstIndex = nextValue.value[0],
+              secondIndex = nextValue.value[1];
 
+        [arrayToSort[firstIndex], arrayToSort[secondIndex]] = [arrayToSort[secondIndex], arrayToSort[firstIndex]];
 
-        arr[firstIndex].color = '#FF6347';
-        arr[secondIndex].color = '#FF6347';
+        arrayToSort[firstIndex].color = '#FF6347';
+        arrayToSort[secondIndex].color = '#FF6347';
 
-        barChart = new BarChart(canvas, {data: arr});
+        barChart = new BarChart(canvas, {data: arrayToSort});
 
         // barChart.swap([[firstIndex, secondIndex]]);
     }
